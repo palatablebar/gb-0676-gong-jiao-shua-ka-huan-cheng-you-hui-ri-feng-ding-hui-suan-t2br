@@ -23,7 +23,7 @@ docker compose exec -T app pytest -q
 
 ## 核心规则
 
-换乘按上次有效付费行程的时间窗计算，优惠与日封顶按确定顺序裁决并保留分币守恒。
+分段计价线路上车、下车各刷一次，两次刷卡配对为一个行程只计一次费；配对失败保留原记录按旧版单次计费。换乘间隔以上一次实际付费行程的完成时刻（分段线路为下车刷卡时刻）起算，窗口[0,60)分钟，零付费行程不续锚。优惠与日封顶按确定顺序裁决并保留分币守恒，每张卡每个业务日产生唯一的应收、换乘依据与封顶结果。未对平不得封存日结。
 
 ## 演示
 
@@ -34,7 +34,7 @@ docker compose exec -T app pytest -q
 
 ## 输入与输出
 
-输入列见 `docs/DATA-DICTIONARY.md`。项目包含dirty.csv、clean.csv、legacy.csv，统一走实际导入路径。上传限制4MB，拒绝不带时区的时间。业务键按字符串保留，Decimal参与计算，空值不会当零。
+输入列见 `docs/DATA-DICTIONARY.md`。项目包含dirty.csv、clean.csv、legacy.csv、segmented.csv，统一走实际导入路径。上传限制4MB，拒绝不带时区的时间。业务键按字符串保留，Decimal参与计算，空值不会当零。
 
 `POST /api/runs` 接收sample或csv；`GET /api/runs`返回历史批次；`POST /api/runs/<id>/review`需要version与decision；`GET /api/runs/<id>/archive`返回唯一证据导出。
 

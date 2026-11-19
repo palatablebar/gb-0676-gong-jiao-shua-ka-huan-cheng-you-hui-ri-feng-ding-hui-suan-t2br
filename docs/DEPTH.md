@@ -1,6 +1,6 @@
 # 深度登记 公交刷卡换乘优惠与日封顶回算
 
-规模：中型。使用者：公交清分中心复核员。核心规则：换乘按上次有效付费行程的时间窗计算，优惠与日封顶按确定顺序裁决并保留分币守恒。
+规模：中型。使用者：公交清分中心复核员。核心规则：分段计价线路上下车两刷配对为一程，换乘间隔以上一次实际付费行程的完成时刻（下车刷卡）起算，优惠与日封顶按确定顺序裁决并保留分币守恒。
 
 ## 功能模块
 
@@ -31,6 +31,10 @@
 | TRAP-11 | 混合偏移 | 落错版本 | UTC归整 | `app/values.py` | `tests/test_m3.py::test_timezone_equal` |
 | TRAP-23 | 换乘截止点 | 重复优惠 | 截止点排除 | `app/modules/m5_discounts/rules.py` | `tests/test_m5.py::test_exact_window_excluded` |
 | TRAP-25 | 票价重叠 | 随意取版 | 冲突隔离 | `app/modules/m3_fares/rules.py` | `tests/test_m3.py::test_overlap_rejected` |
+| TRAP-27 | 分段两刷重复扣费 | 两刷算两程 | 上下车配对合并一程 | `app/modules/m4_journeys/rules.py` | `tests/test_segmented.py::test_pair_merges_two_taps_into_one_journey` |
+| TRAP-28 | 换乘起算点漂移 | 以上车起算误排长途接续 | 以上一付费行程完成时刻（下车）起算 | `app/modules/m5_discounts/rules.py` | `tests/test_segmented.py::test_transfer_anchor_is_alighting_completion` |
+| TRAP-29 | 补刷重跑重复占额 | 重复行重复计额 | 重复行去重+同源重跑复用批次 | `app/modules/m1_taps/rules.py`、`app/pipeline.py` | `tests/test_segmented.py::test_rerun_same_input_reuses_batch` |
+| TRAP-30 | 配对失败丢记录 | 丢弃或强行合并 | 保留原记录按旧版单次计费并标注 | `app/modules/m4_journeys/rules.py` | `tests/test_segmented.py::test_orphan_keeps_original_record_old_result` |
 
 ## 对账规则
 
